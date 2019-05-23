@@ -19,6 +19,18 @@ export default class GameScene extends cc.Component {
     })
     gameWrap: cc.Node = null
 
+    // 当前赌币
+    @property({
+        type: cc.Node
+    })
+    betGlodWrap: cc.Node = null
+
+    // 选择金额
+    @property({
+        type: cc.Node
+    })
+    selectWrap: cc.Node = null
+
     // colarray
     colArray: Array<cc.Node> = []
 
@@ -33,6 +45,7 @@ export default class GameScene extends cc.Component {
 
     // 调整速度
     adaptSpeed: number = 300
+
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -204,5 +217,20 @@ export default class GameScene extends cc.Component {
      */
     printColData(): void {
         console.log(this.colArray)
+    }
+
+    /**
+     * 打开金额选择
+     */
+    openSelectWrap(): void {
+        this.selectWrap.active = true
+    }
+
+    /**
+     * 选择金额
+     */
+    selectGold(e: any, customeventdata: string): void {
+        this.betGlodWrap.getComponent(cc.Label).string = customeventdata
+        this.selectWrap.active = false
     }
 }
