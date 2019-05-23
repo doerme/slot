@@ -26,7 +26,7 @@ export default class GameScene extends cc.Component {
     primarySpeed: Array<number> = [0, 0, 0]
 
     // 转盘减速度
-    decreaseSpeed: number = 500
+    decreaseSpeed: number = 300
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -56,16 +56,21 @@ export default class GameScene extends cc.Component {
             if(tmpOffset <= 0) {
                 return true
             }
-            item.y -= tmpOffset
 
-            if(item.y < - item.height) {
-                item.y = item.height
-            }
+                item.y -= tmpOffset
+                if(item.y < - item.height * 3/2) {
+                    if(Number(index) % 2 === 1){
+                        item.y = this.colArray[index - 1].y + item.height
+                    } else {
+                        item.y = this.colArray[index + 1].y + item.height
+                    }
+                }
 
             // 减速度
             if(Math.floor(index/2) === 0 || this.primarySpeed[Math.floor(index/2) - 1] <= 0){
                 this.primarySpeed[Math.floor(index/2)] -= this.decreaseSpeed*dt
             }
+
         })
     }
 
@@ -75,14 +80,14 @@ export default class GameScene extends cc.Component {
     spinClick(){
         this._offsetInit()
 
-        this.primarySpeed = [5000, 5000, 5000]
+        this.primarySpeed = [3000, 3000, 3000]
     }
 
     _offsetInit() {
         this.colArray.forEach((item, index) => {
             item.x = 220 *(Math.floor(index/2) - 1)
             if(Number(index) % 2 === 1){
-                item.y = item.height
+                item.y = - item.height
             } else {
                 item.y = 0
             }
