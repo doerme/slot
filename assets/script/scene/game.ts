@@ -51,7 +51,7 @@ export default class GameScene extends cc.Component {
     }
 
     update (dt) {
-        console.log(`game scence update ${dt}`)
+        // console.log(`game scence update ${dt}`)
         this.colArray.forEach((item) => {
             if(item.y < - item.height  - this.primarySpeed*dt) {
                 item.y = item.height - this.primarySpeed*dt
