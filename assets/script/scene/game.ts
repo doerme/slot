@@ -19,6 +19,12 @@ export default class GameScene extends cc.Component {
     })
     gameWrap: cc.Node = null
 
+    // colarray
+    colArray: Array<cc.Node> = []
+
+    // 转盘初始速度
+    primarySpeed: number = 10
+
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
@@ -27,8 +33,21 @@ export default class GameScene extends cc.Component {
 
     start () {
         console.log(`game scence start`)
-        this.gameWrap.addChild(cc.instantiate(this.colPrefab))
+        this.colArray.push(cc.instantiate(this.colPrefab))
+        this.colArray.push(cc.instantiate(this.colPrefab))
+        this.colArray.push(cc.instantiate(this.colPrefab))
+
+        this.colArray.forEach((item, index) => {
+            item.x = 220 * (index - 1)
+            this.gameWrap.addChild(item)
+        })
+        
     }
 
-    // update (dt) {}
+    update (dt) {
+        console.log(`game scence update ${dt}`)
+        this.colArray.forEach((item) => {
+            item.y -= this.primarySpeed*dt
+        })
+    }
 }
