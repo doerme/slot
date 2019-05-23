@@ -25,6 +25,9 @@ export default class GameScene extends cc.Component {
     // 转盘初始速度
     primarySpeed: number = 10
 
+    // 转盘减速度
+    decreaseSpeed: number =2
+
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
