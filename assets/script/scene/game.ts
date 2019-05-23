@@ -23,10 +23,10 @@ export default class GameScene extends cc.Component {
     colArray: Array<cc.Node> = []
 
     // 转盘初始速度
-    primarySpeed: number = 1000
+    primarySpeed: Array<number> = [0, 0, 0]
 
     // 转盘减速度
-    decreaseSpeed: number =2
+    decreaseSpeed: number = 500
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -39,26 +39,53 @@ export default class GameScene extends cc.Component {
         for(let index=0; index <=6; index++){
             this.colArray.push(cc.instantiate(this.colPrefab))
         }
-        console.log('colArray', this.colArray)
+        this.colArray.forEach((item, index) => {
+            this.gameWrap.addChild(item)
+        })
+        this._offsetInit()
+    }
+
+    /**
+     * 帧数更新生命周期
+     * @param dt 距离上一次update 时间间隔
+     */
+    update (dt: any) {
+        // console.log(`game scence update ${dt}`)
+        this.colArray.forEach((item, index) => {
+            const tmpOffset = (this.primarySpeed[Math.floor(index/2)])*dt
+            if(tmpOffset <= 0) {
+                return true
+            }
+            item.y -= tmpOffset
+
+            if(item.y < - item.height) {
+                item.y = item.height
+            }
+
+            // 减速度
+            if(Math.floor(index/2) === 0 || this.primarySpeed[Math.floor(index/2) - 1] <= 0){
+                this.primarySpeed[Math.floor(index/2)] -= this.decreaseSpeed*dt
+            }
+        })
+    }
+
+    /**
+     * 开始抽奖
+     */
+    spinClick(){
+        this._offsetInit()
+
+        this.primarySpeed = [5000, 5000, 5000]
+    }
+
+    _offsetInit() {
         this.colArray.forEach((item, index) => {
             item.x = 220 *(Math.floor(index/2) - 1)
             if(Number(index) % 2 === 1){
                 item.y = item.height
-            }
-            this.gameWrap.addChild(item)
-        })
-        
-    }
-
-    update (dt) {
-        // console.log(`game scence update ${dt}`)
-        this.colArray.forEach((item) => {
-            if(item.y < - item.height  - this.primarySpeed*dt) {
-                item.y = item.height - this.primarySpeed*dt
             } else {
-                item.y -= this.primarySpeed*dt
+                item.y = 0
             }
-            
         })
     }
 }
