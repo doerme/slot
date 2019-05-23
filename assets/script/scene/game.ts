@@ -23,7 +23,7 @@ export default class GameScene extends cc.Component {
     colArray: Array<cc.Node> = []
 
     // 转盘初始速度
-    primarySpeed: number = 10
+    primarySpeed: number = 1000
 
     // 转盘减速度
     decreaseSpeed: number =2
@@ -36,12 +36,15 @@ export default class GameScene extends cc.Component {
 
     start () {
         console.log(`game scence start`)
-        this.colArray.push(cc.instantiate(this.colPrefab))
-        this.colArray.push(cc.instantiate(this.colPrefab))
-        this.colArray.push(cc.instantiate(this.colPrefab))
-
+        for(let index=0; index <=6; index++){
+            this.colArray.push(cc.instantiate(this.colPrefab))
+        }
+        console.log('colArray', this.colArray)
         this.colArray.forEach((item, index) => {
-            item.x = 220 * (index - 1)
+            item.x = 220 *(Math.floor(index/2) - 1)
+            if(Number(index) % 2 === 1){
+                item.y = item.height
+            }
             this.gameWrap.addChild(item)
         })
         
@@ -50,7 +53,12 @@ export default class GameScene extends cc.Component {
     update (dt) {
         console.log(`game scence update ${dt}`)
         this.colArray.forEach((item) => {
-            item.y -= this.primarySpeed*dt
+            if(item.y < - item.height  - this.primarySpeed*dt) {
+                item.y = item.height - this.primarySpeed*dt
+            } else {
+                item.y -= this.primarySpeed*dt
+            }
+            
         })
     }
 }
