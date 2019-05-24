@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/doerme/slot#readme",
   "dependencies": {
+    "@yy/hiidojs": "^2.4.0",
     "mobx": "^5.9.4"
   }
 }

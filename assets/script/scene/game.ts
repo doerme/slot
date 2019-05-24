@@ -1,3 +1,4 @@
+import { report, Metrics, oldMetrics, setSiteId, setSpeId } from '@yy/hiidojs'
 import { store } from '../store/store'
 import { observer, render, reactor, react } from "../store/observer";
 import CONFIG from '../config'
@@ -41,16 +42,25 @@ export default class GameScene extends cc.Component {
     primarySpeed: Array<number> = [0, 0, 0]
 
     // 转盘减速度
-    decreaseSpeed: number = 300
+    decreaseSpeed: number = 500
 
     // 调整速度
-    adaptSpeed: number = 300
+    adaptSpeed: number = 500
 
 
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
         console.log(`game scence onload`)
+        console.log('hiido esm', report, Metrics, oldMetrics, setSiteId, setSpeId)
+        Metrics.setOptions({ isOversea: true })
+        Metrics.customReport({
+        scode: '50264',
+        ver: '1.0',
+        uri: 'hello_world',
+        topic: 'main_scene',
+        val: Math.random() * 10
+        })
     }
 
     start () {
@@ -171,8 +181,9 @@ export default class GameScene extends cc.Component {
             if(item <= 0 && this.twoColArray[index].state === 2) {
                 const offset = this.twoColArray[index].adaptOffset
                 const adaptWay = dt * this.adaptSpeed
+                const limitDistance = adaptWay * 6
                 if(offset > 0) { // 需要减 达到卡位
-                    if(Math.abs(offset) < adaptWay * 2) {
+                    if(Math.abs(offset) < limitDistance) {
                         this.colArray[index * 2].y -= offset
                         this.colArray[index * 2 + 1].y -= offset
                         this.twoColArray[index].state = 0
@@ -183,7 +194,7 @@ export default class GameScene extends cc.Component {
                         this.twoColArray[index].adaptOffset -= adaptWay
                     }
                 } else { // 需要加达到卡位
-                    if(Math.abs(offset) < adaptWay * 2) {
+                    if(Math.abs(offset) < limitDistance) {
                         this.colArray[index * 2].y += offset
                         this.colArray[index * 2 + 1].y += offset
                         this.twoColArray[index].state = 0
