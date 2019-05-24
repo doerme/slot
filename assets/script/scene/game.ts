@@ -164,7 +164,7 @@ export default class GameScene extends cc.Component {
                         }else{
                             this.twoColArray[index].adaptOffset = -(CONFIG.unitHeight - Math.abs(offset))
                         }
-                        console.log('offset up >', index, this.twoColArray[index].adaptOffset, this.colArray[index * 2].y)
+                        console.log('offset up >', index, this.twoColArray[index].adaptOffset)
                     } else { // 需要加达到卡位
                         this.twoColArray[index].state = 2
                         if(offset > 0){
@@ -172,7 +172,7 @@ export default class GameScene extends cc.Component {
                         }else{
                             this.twoColArray[index].adaptOffset = Math.abs(offset)
                         }
-                        console.log('offset down >', index, this.twoColArray[index].adaptOffset, this.colArray[index * 2].y)
+                        console.log('offset down >', index, this.twoColArray[index].adaptOffset)
                     }
                 }
             }
@@ -181,29 +181,20 @@ export default class GameScene extends cc.Component {
             if(item <= 0 && this.twoColArray[index].state === 2) {
                 const offset = this.twoColArray[index].adaptOffset
                 const adaptWay = dt * this.adaptSpeed
-                const limitDistance = adaptWay * 6
-                if(offset > 0) { // 需要减 达到卡位
-                    if(Math.abs(offset) < limitDistance) {
-                        this.colArray[index * 2].y -= offset
-                        this.colArray[index * 2 + 1].y -= offset
-                        this.twoColArray[index].state = 0
-                        this.twoColArray[index].adaptOffset = 0
-                    } else{
-                        this.colArray[index * 2].y += adaptWay
-                        this.colArray[index * 2 + 1].y += adaptWay
-                        this.twoColArray[index].adaptOffset -= adaptWay
-                    }
+                const limitDistance = adaptWay * 3
+                if(Math.abs(offset) < limitDistance) {
+                    this.colArray[index * 2].y += offset
+                    this.colArray[index * 2 + 1].y += offset
+                    this.twoColArray[index].state = 0
+                    this.twoColArray[index].adaptOffset = 0
+                } else if(offset > 0) { // 需要减 达到卡位
+                    this.colArray[index * 2].y += adaptWay
+                    this.colArray[index * 2 + 1].y += adaptWay
+                    this.twoColArray[index].adaptOffset -= adaptWay
                 } else { // 需要加达到卡位
-                    if(Math.abs(offset) < limitDistance) {
-                        this.colArray[index * 2].y += offset
-                        this.colArray[index * 2 + 1].y += offset
-                        this.twoColArray[index].state = 0
-                        this.twoColArray[index].adaptOffset = 0
-                    }else{
-                        this.colArray[index * 2].y -= adaptWay
-                        this.colArray[index * 2 + 1].y -= adaptWay
-                        this.twoColArray[index].adaptOffset += adaptWay
-                    }
+                    this.colArray[index * 2].y -= adaptWay
+                    this.colArray[index * 2 + 1].y -= adaptWay
+                    this.twoColArray[index].adaptOffset += adaptWay
                 }
             }
         })
