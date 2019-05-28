@@ -53,17 +53,17 @@ export default class GameScene extends cc.Component {
     // 转盘初始速度
     primarySpeed: Array<number> = [0, 0, 0]
 
-    // 转盘减速度
-    decreaseSpeed: number = 500
+    // 转盘减速度 调整后 需要对应调整期望结果偏移量
+    decreaseSpeed: number = 1000
 
-    // 调整速度
-    adaptSpeed: number = 500
+    // 调整速度 调整后 需要对应调整期望结果偏移量
+    adaptSpeed: number = 1000
 
     // 当前目标转到结果
     resultAim: Array<number>=[0,0,0]
 
-    // 期望结果偏移量
-    expectOffset: number = 1
+    // 期望结果偏移量 必须为正数
+    expectOffset: number = 4
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -107,8 +107,11 @@ export default class GameScene extends cc.Component {
     spinClick(){
         // let randomNumber = 4000 - Math.round(Math.random() * 1000)
         let randomNumber = 4000
-        this.resultAim = [transformFruitString('西瓜') ,transformFruitString('葡萄'), transformFruitString('bar')]
+        this.resultAim = [Math.floor(Math.random() * 7) ,Math.floor(Math.random() * 7), Math.floor(Math.random() * 7)]
         console.log(this.resultAim)
+        this.resultAim.forEach((item: any, index: any) => {
+            console.log(`期望结果`,index, CONFIG.colIconArray[item])
+        })
         this._offsetInit()
         this.primarySpeed = [randomNumber, randomNumber, randomNumber]
         this.twoColArray = [
