@@ -63,7 +63,7 @@ export default class GameScene extends cc.Component {
     resultAim: Array<number>=[0,0,0]
 
     // 期望结果偏移量
-    expectOffset: number = 2
+    expectOffset: number = 1
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -107,8 +107,8 @@ export default class GameScene extends cc.Component {
     spinClick(){
         // let randomNumber = 4000 - Math.round(Math.random() * 1000)
         let randomNumber = 4000
-        console.log('目标结果 苹果 葡萄 樱桃')
-        this.resultAim = [transformFruitString('苹果') ,transformFruitString('葡萄'), transformFruitString('樱桃')]
+        this.resultAim = [transformFruitString('西瓜') ,transformFruitString('葡萄'), transformFruitString('bar')]
+        console.log(this.resultAim)
         this._offsetInit()
         this.primarySpeed = [randomNumber, randomNumber, randomNumber]
         this.twoColArray = [
@@ -124,51 +124,50 @@ export default class GameScene extends cc.Component {
         ]
     }
 
+    _bottomToTop(item: any, bother: any):void{
+        if(item.y < - item.height * 3/2) {
+            item.y = bother.y + item.height
+        }
+    }
+
     /**
      * 列滚动动画
      */
     _colScroll(dt: any): void {
-        this.colArray.forEach((item, index) => {
+        this.twoColArray.forEach((item, index) => {
             // console.log(Math.floor(index/2), this.twoColArray, this.colArray)
-            if(this.twoColArray[Math.floor(index/2)].state == 0 || this.twoColArray[Math.floor(index/2)].state == 3) {
+            if(item.state == 0 || item.state == 3) {
                 // console.log(`end scroll for state`, index)
                 return true
             }
-            const tmpOffset = (this.primarySpeed[Math.floor(index/2)])*dt
+            const tmpOffset = (this.primarySpeed[index])*dt
             if(tmpOffset <= 0) {
                 console.log(`end scroll for offset`, index)
                 return true
             }
+            this.colArray[index * 2].y -= tmpOffset
+            this.colArray[index * 2 + 1].y -= tmpOffset
 
-            item.y -= tmpOffset
-            if(item.y < - item.height * 3/2) {
-                if(Number(index) % 2 === 1){
-                    item.y = this.colArray[index - 1].y + item.height
-                } else {
-                    item.y = this.colArray[index + 1].y + item.height
-                }
-            }
-
+            this._bottomToTop(this.colArray[index * 2], this.colArray[index * 2 + 1])
+            this._bottomToTop(this.colArray[index * 2 + 1], this.colArray[index * 2])
+            
             // 减速度 第一列直接减速  其他列等前一列减速小于0时候 再减速
-            if(Math.floor(index/2) === 0 || this.primarySpeed[Math.floor(index/2) - 1] <= 0){
+            if(index === 0 || this.primarySpeed[index - 1] <= 0){
             // if(true) {
-                if(this.primarySpeed[Math.floor(index/2)] < this.decreaseSpeed*dt) {
-                    this.primarySpeed[Math.floor(index/2)] = 0
-                } else if(this.twoColArray[Math.floor(index/2)].state == 2){
+                if(this.primarySpeed[index] < this.decreaseSpeed*dt) {
+                    this.primarySpeed[index] = 0
+                } else if(this.twoColArray[index].state == 2){
                     // 根据结果开始减速
-                    this.primarySpeed[Math.floor(index/2)] -= this.decreaseSpeed*dt
+                    this.primarySpeed[index] -= this.decreaseSpeed*dt
                 } else {
-                    const yoffset = this.resultAim[Math.floor(index/2)] - this.expectOffset
-                    if(Number(index) % 2 === 1){
-                        this.colArray[index - 1].y += yoffset * 178 - this.colArray[index].y
-                    } else {
-                        this.colArray[index + 1].y += yoffset * 178 - this.colArray[index].y
+                    const yoffset = -this.resultAim[index]
+                    const yduration = (yoffset - this.expectOffset) * 178
+                    // console.log(`-----------`, yoffset, index * 2, this.colArray[index * 2].y)
+                    if(this.colArray[index * 2].y > yduration && this.colArray[index * 2].y <= yduration + tmpOffset) {
+                        this.twoColArray[index].state = 2
+                        this._printGameEndResult(`begin expect >>>>>>>>>>`, yoffset, transformFruit(yoffset))
                     }
-                    this.colArray[index].y = yoffset * 178
-                    this.twoColArray[Math.floor(index/2)].adaptOffset = yoffset * 178 - this.colArray[index].y
-                    console.log(`yoffset:`, yoffset, this.expectOffset)
-                    this._printGameEndResult(`begin expect >>>>>>>>>>`, yoffset, transformFruit(yoffset))
-                    this.twoColArray[Math.floor(index/2)].state = 2
+                    
                 }
             }
 
@@ -245,6 +244,7 @@ export default class GameScene extends cc.Component {
      */
     _printGameEndResult(pretab: string,colindex: number, resultIndex: number): void {
         console.log(pretab, `>> ${colindex} <<`, CONFIG.colIconArray[resultIndex], resultIndex)
+        console.log(this.primarySpeed, this.twoColArray)
     }
 
     /**
